@@ -1,0 +1,13 @@
+# GET - /
+GET http://localhost:3000
+
+@baseUrl = http://localhost:3000/api/v1/chat
+
+### POST - /api/v1/chat
+POST  {{baseUrl}}/completions
+Content-Type: application/json
+
+{
+  "model":"whisper-large-v3",
+  "prompt":"List of top programming languages."
+}
