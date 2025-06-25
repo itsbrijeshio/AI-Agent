@@ -20,6 +20,6 @@ const prompt = zod.string({ message: "Prompt are required." }).min(1).max(100);
 const modelSchema = zod.object({
   prompt,
   model,
-});
+}).strict();
 
 export { modelSchema };

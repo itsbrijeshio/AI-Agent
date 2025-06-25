@@ -1,8 +1,9 @@
 import app from "./src/app";
-import { envConfig } from "./src/config";
+import { envConfig, connectDB } from "./src/config";
 
 const PORT = envConfig.port;
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+  await connectDB();
   console.log(`Server is listening on port ${PORT}`);
 });

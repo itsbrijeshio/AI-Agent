@@ -1,5 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import { ZodError } from "zod";
+import { ApiError } from "../utils";
+import { envConfig } from "../config";
+import {
+  JsonWebTokenError,
+  NotBeforeError,
+  TokenExpiredError,
+} from "jsonwebtoken";
 
 const asyncHandler =
   (fn: Function, errorFormatter = defaultErrorFormatter) =>
@@ -8,7 +15,9 @@ const asyncHandler =
       await fn(req, res, next);
     } catch (error) {
       const { statusCode, ...rest } = errorFormatter(error);
-
+      if (statusCode == 500) {
+        console.log("ERROR", error);
+      }
       res.status(statusCode).json({
         ...rest,
         statusCode,
@@ -39,10 +48,25 @@ const defaultErrorFormatter = (error: any) => {
       message: "Validation Error.",
       error: formatZodError(error),
     };
+  } else if (error instanceof ApiError) {
+    return {
+      statusCode: error.statusCode,
+      message: error.message,
+    };
+  } else if (
+    error instanceof JsonWebTokenError ||
+    error instanceof NotBeforeError ||
+    error instanceof TokenExpiredError
+  ) {
+    return {
+      statusCode: 401,
+      message: "Unauthorized Access",
+    };
   } else {
     return {
       statusCode: 500,
       message: "Something went wrong.",
+      error: envConfig.nodeEnv == "development" && error.stack,
     };
   }
 };
