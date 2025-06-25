@@ -5,9 +5,14 @@ import { ApiError } from "../utils";
 import { NextFunction, Response } from "express";
 import { AuthRequest } from "../types";
 
+const getHeader = (header: any, prop: string) => {
+  return header[prop];
+};
+
 const authRefreshToken = asyncHandler(
   async (req: AuthRequest, res: Response, next: NextFunction) => {
-    const refreshToken = req.headers?.get?.("refreshToken")?.split(" ")[1];
+    const refreshToken = getHeader(req.headers, "refreshtoken");
+
     if (!refreshToken) {
       throw new ApiError(401, "Unauthorized Access");
     }
